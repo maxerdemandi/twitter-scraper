@@ -1,0 +1,74 @@
+import tweepy
+from tweepy import OAuthHandler
+import pandas as pd
+
+
+print("Begin scraping.")
+
+#Add your API access token in single quotations.
+
+access_token = ''
+access_token_secret = ''
+consumer_key = ''
+consumer_secret = ''
+
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+
+api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
+
+tweets = []
+
+count = 1
+
+#Twitter only pulls a sample of tweets from the last 7 days. The q function is used to indicate the specific hashtag, keyword, handle, or key phrase of interest. The "-filter: retweets" can be removed if the researcher wishes to gather retweets, as well. You can also manually add in the number of tweets you want to get back in the items() section.
+
+
+for tweet in tweepy.Cursor(api.search, q=" -filter:retweets", count=1000, tweet_mode='extended', lang='en', since='2020-09-15').items():
+    
+    count += 1
+
+    try: 
+        data = [
+            tweet.created_at, 
+            tweet.id, 
+            tweet.full_text.replace('&amp;','and').replace('‚Äô','\'').replace('‚Äú','\"'), 
+            tweet.favorite_count, 
+            tweet.retweet_count, 
+            tweet.user._json['screen_name'], 
+            tweet.user._json['name'], 
+            tweet.place,
+            tweet.coordinates,
+            tweet.user.location, 
+            tweet.user._json['created_at'], 
+            tweet.entities['urls']
+        ]
+        data = tuple(data)
+        tweets.append(data)
+
+    except tweepy.TweepError as e:
+        print(e.reason)
+        continue
+
+    except StopIteration:
+        break
+
+df = pd.DataFrame(tweets, columns = [
+    'created_at',
+    'tweet_id', 
+    'tweet_text', 
+    'favorite_count', 
+    'retweet count', 
+    'screen_name', 
+    'name',
+    'place',
+    'coordinates',
+    'location', 
+    'account_creation_date', 
+    'urls'
+])
+
+#Add the path to the folder as well as the name of the output CSV file inside the single quotations.
+df.to_csv(path_or_buf = '', index=False) 
+
+print("Finished scraping.")
