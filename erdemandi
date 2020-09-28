@@ -2,7 +2,6 @@ import tweepy
 from tweepy import OAuthHandler
 import pandas as pd
 
-
 print("Begin scraping.")
 
 #Add your API access token in single quotations.
@@ -22,7 +21,6 @@ tweets = []
 count = 1
 
 #Twitter only pulls a sample of tweets from the last 7 days. The q function is used to indicate the specific hashtag, keyword, handle, or key phrase of interest. The "-filter: retweets" can be removed if the researcher wishes to gather retweets, as well. You can also manually add in the number of tweets you want to get back in the items() section.
-
 
 for tweet in tweepy.Cursor(api.search, q=" -filter:retweets", count=1000, tweet_mode='extended', lang='en', since='2020-09-15').items():
     
