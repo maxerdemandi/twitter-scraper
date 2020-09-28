@@ -31,15 +31,20 @@ for tweet in tweepy.Cursor(api.search, q=" -filter:retweets", count=1000, tweet_
     try: 
         data = [
             tweet.created_at, 
-            tweet.id, 
+            tweet.id_str, 
             tweet.full_text.replace('&amp;','and').replace('‚Äô','\'').replace('‚Äú','\"'), 
             tweet.favorite_count, 
             tweet.retweet_count, 
+            tweet.lang,
             tweet.user._json['screen_name'], 
             tweet.user._json['name'], 
             tweet.place,
             tweet.coordinates,
             tweet.user.location, 
+            tweet.source,
+            tweet.in_reply_to_status_id_str, 
+            tweet.in_reply_to_user_id_str, 
+            tweet.is_quote_status,
             tweet.user._json['created_at'], 
             tweet.entities['urls']
         ]
@@ -59,11 +64,16 @@ df = pd.DataFrame(tweets, columns = [
     'tweet_text', 
     'favorite_count', 
     'retweet count', 
+    'tweet language',
     'screen_name', 
     'name',
     'place',
     'coordinates',
     'location', 
+    'source',
+    'if reply original tweet id',
+    'if reply original user id',
+    'quote tweet',
     'account_creation_date', 
     'urls'
 ])
