@@ -21,17 +21,18 @@ tweets = []
 count = 1
 
 #Twitter only pulls a sample of tweets from the last 7 days. 
-#Enter one or multiple comma seperated items in search terms = '', can be hashtags, keywords, handles, or key phrases of interest. 
+#Enter one or multiple items seperated with or in search terms = '' - can be hashtags, keywords, handles, or key phrases of interest. 
 #Manually add in the number of tweets you want to get back in items(). 
 #Searches can further be filtered by added "-filter: retweets" or lang='en'.
 
-search_term = 'masksdontwork'
+search_term = '' 
 
 for tweet in tweepy.Cursor(api.search, 
                            q=search_term, 
                            count=1000, 
                            tweet_mode='extended',
-                           since='2020-09-20').items(100):
+                           result_type='top',
+                           since='YYYY-MM-DD').items():
     
     count += 1
 
