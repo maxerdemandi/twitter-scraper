@@ -20,9 +20,18 @@ tweets = []
 
 count = 1
 
-#Twitter only pulls a sample of tweets from the last 7 days. The q function is used to indicate the specific hashtag, keyword, handle, or key phrase of interest. The "-filter: retweets" can be removed if the researcher wishes to gather retweets, as well. You can also manually add in the number of tweets you want to get back in the items() section.
+#Twitter only pulls a sample of tweets from the last 7 days. 
+#Enter one or multiple comma seperated items in search terms = '', can be hashtags, keywords, handles, or key phrases of interest. 
+#Manually add in the number of tweets you want to get back in items(). 
+#Searches can further be filtered by added "-filter: retweets" or lang='en'.
 
-for tweet in tweepy.Cursor(api.search, q=" -filter:retweets", count=1000, tweet_mode='extended', lang='en', since='2020-09-15').items():
+search_term = 'masksdontwork'
+
+for tweet in tweepy.Cursor(api.search, 
+                           q=search_term, 
+                           count=1000, 
+                           tweet_mode='extended',
+                           since='2020-09-20').items(100):
     
     count += 1
 
@@ -37,18 +46,18 @@ for tweet in tweepy.Cursor(api.search, q=" -filter:retweets", count=1000, tweet_
             tweet.user._json['screen_name'], 
             tweet.user._json['name'], 
             tweet.place,
-            tweet.coordinates,
             tweet.user.location, 
             tweet.source,
             tweet.in_reply_to_status_id_str, 
-            tweet.in_reply_to_user_id_str, 
+            tweet.in_reply_to_user_id_str,
+            tweet.in_reply_to_screen_name,
             tweet.is_quote_status,
             tweet.user._json['created_at'], 
             tweet.entities['urls']
         ]
         data = tuple(data)
         tweets.append(data)
-
+        
     except tweepy.TweepError as e:
         print(e.reason)
         continue
@@ -57,26 +66,27 @@ for tweet in tweepy.Cursor(api.search, q=" -filter:retweets", count=1000, tweet_
         break
 
 df = pd.DataFrame(tweets, columns = [
-    'created_at',
-    'tweet_id', 
-    'tweet_text', 
-    'favorite_count', 
+    'created at',
+    'tweet id', 
+    'tweet text', 
+    'favorite count', 
     'retweet count', 
     'tweet language',
-    'screen_name', 
+    'screenname', 
     'name',
-    'place',
-    'coordinates',
-    'location', 
+    'tweet location',
+    'user location', 
     'source',
     'if reply original tweet id',
     'if reply original user id',
+    'if reply original user screenname',
     'quote tweet',
-    'account_creation_date', 
-    'urls'
+    'account creation date', 
+    'entities'
 ])
 
-#Add the path to the folder as well as the name of the output CSV file inside the single quotations.
-df.to_csv(path_or_buf = '', index=False) 
+#Add the path to the folder as well as the name of the output CSV file inside the single quotations
+
+df.to_csv(path_or_buf = '/Users/maxerdemandi/Desktop/ScrapeTweets/mask2.csv', index=False) 
 
 print("Finished scraping.")
