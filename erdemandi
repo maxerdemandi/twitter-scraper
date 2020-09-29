@@ -88,6 +88,6 @@ df = pd.DataFrame(tweets, columns = [
 
 #Add the path to the folder as well as the name of the output CSV file inside the single quotations
 
-df.to_csv(path_or_buf = '/Users/maxerdemandi/Desktop/ScrapeTweets/mask2.csv', index=False) 
+df.to_csv(path_or_buf = '', index=False) 
 
 print("Finished scraping.")
