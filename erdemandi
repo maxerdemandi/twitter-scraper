@@ -2,9 +2,8 @@ import tweepy
 from tweepy import OAuthHandler
 import pandas as pd
 
-print("Begin scraping.")
 
-#Add your API access token in single quotations.
+print("Begin scraping.")
 
 access_token = ''
 access_token_secret = ''
@@ -21,15 +20,15 @@ tweets = []
 count = 1
 
 #Twitter only pulls a sample of tweets from the last 7 days. 
-#Enter one or multiple items seperated with or in search terms = '' - can be hashtags, keywords, handles, or key phrases of interest. 
+#Enter one or multiple comma seperated items in search terms = '', can be hashtags, keywords, handles, or key phrases of interest. 
 #Manually add in the number of tweets you want to get back in items(). 
 #Searches can further be filtered by added "-filter: retweets" or lang='en'.
 
-search_term = '' 
+search_term = ''
 
 for tweet in tweepy.Cursor(api.search, 
-                           q=search_term, 
-                           count=1000, 
+                           q= search_term, 
+                           count=5000, 
                            tweet_mode='extended',
                            result_type='top',
                            since='YYYY-MM-DD').items():
@@ -40,7 +39,7 @@ for tweet in tweepy.Cursor(api.search,
         data = [
             tweet.created_at, 
             tweet.id_str, 
-            tweet.full_text.replace('&amp;','and').replace('‚Äô','\'').replace('‚Äú','\"'), 
+            tweet.full_text, 
             tweet.favorite_count, 
             tweet.retweet_count, 
             tweet.lang,
@@ -48,17 +47,21 @@ for tweet in tweepy.Cursor(api.search,
             tweet.user._json['name'], 
             tweet.place,
             tweet.user.location, 
+            tweet.user.followers_count,
+            tweet.user.friends_count,
+            tweet.user.description,
+            tweet.user.listed_count,
+            tweet.user.statuses_count,
             tweet.source,
             tweet.in_reply_to_status_id_str, 
-            tweet.in_reply_to_user_id_str,
-            tweet.in_reply_to_screen_name,
+            tweet.in_reply_to_user_id_str, 
             tweet.is_quote_status,
             tweet.user._json['created_at'], 
             tweet.entities['urls']
         ]
         data = tuple(data)
         tweets.append(data)
-        
+
     except tweepy.TweepError as e:
         print(e.reason)
         continue
@@ -67,27 +70,31 @@ for tweet in tweepy.Cursor(api.search,
         break
 
 df = pd.DataFrame(tweets, columns = [
-    'created at',
+    'creation time',
     'tweet id', 
     'tweet text', 
     'favorite count', 
     'retweet count', 
     'tweet language',
-    'screenname', 
+    'screen name', 
     'name',
-    'tweet location',
-    'user location', 
+    'place',
+    'user reported location', 
+    'followers',
+    'following',
+    'description',
+    'listed_count',
+    'total number of tweets by user',
     'source',
     'if reply original tweet id',
     'if reply original user id',
-    'if reply original user screenname',
     'quote tweet',
     'account creation date', 
-    'entities'
+    'urls'
 ])
 
 #Add the path to the folder as well as the name of the output CSV file inside the single quotations
 
-df.to_csv(path_or_buf = '', index=False) 
+df.to_csv(path_or_buf = '', encoding='utf-8', index=False) 
 
 print("Finished scraping.")
