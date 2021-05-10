@@ -35,6 +35,24 @@ for tweet in tweepy.Cursor(api.search,
     
     count += 1
 
+    #check if the user specify location of his/her tweet
+    #we default this to 0
+    place_full_name=0
+    exact_coordinates=0
+    box_coordinates=0
+    if type(tweet.place) == tweepy.models.Place:
+        try:
+            #check if the location is specific
+            #if exist this data is in a [long,lat] list instead of [lat,long]
+            # e.g. [35.0, 135.0]
+            exact_coordinates=tweet.place.coordinates
+        except AttributeError as e:
+            #coordinatnates is a bounding
+            #this data is a list of coordinates in [lat,long] list
+            # e.g. [[135.0, 35.0],[135.0, 35.1],[135.1, 35.0],[135.1, 35.1]]
+            box_coodinates=tweet.place.bounding_box.coordinates
+            place_full_name=tweet.place.full_name
+
     try: 
         data = [
             tweet.created_at, 
@@ -45,7 +63,9 @@ for tweet in tweepy.Cursor(api.search,
             tweet.lang,
             tweet.user._json['screen_name'], 
             tweet.user._json['name'], 
-            tweet.place,
+            exact_coordinates,
+	    box_coordinates,
+	    place_full_name,
             tweet.user.location, 
             tweet.user.followers_count,
             tweet.user.friends_count,
@@ -78,7 +98,9 @@ df = pd.DataFrame(tweets, columns = [
     'tweet language',
     'screen name', 
     'name',
-    'place',
+    'exact_coordinates',
+    'bounding_coordinates',
+    'place_full_name',
     'user reported location', 
     'followers',
     'following',
