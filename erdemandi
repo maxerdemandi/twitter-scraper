@@ -19,7 +19,7 @@ tweets = []
 
 count = 1
 
-#Twitter only pulls a sample of tweets from the last 7 days. 
+#Twitter only pulls a sample of tweets from the last 7 days for the commercial API. 
 #Enter one or multiple comma seperated items in search terms = '', can be hashtags, keywords, handles, or key phrases of interest. 
 #Manually add in the number of tweets you want to get back in items(). 
 #Searches can further be filtered by added "-filter: retweets" or lang='en'.
